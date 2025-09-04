@@ -10,6 +10,9 @@ def create_tables():
     with app.app_context():
         db.create_all()
 
+# Initialize tables when module is imported (for Gunicorn)
+create_tables()
+
 if __name__ == "__main__":
-    create_tables()
-    socketio.run(app,host="0.0.0.0", port=4321, debug=True)
+    # This runs only when called directly with python main.py
+    socketio.run(app, host="0.0.0.0", port=4321, debug=True)

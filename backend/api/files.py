@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request, jsonify, Response
 from models import Files
-from app import db
+from app import db, socketio
 
 # Define a variable for the upload folder
 # IMPORTANT: Change this to a real, accessible path on your system.
@@ -74,3 +74,14 @@ def file_upload():
     else:
         # If the file extension is not allowed
         return jsonify({"error": "File type not allowed"}), 400
+    
+
+@socketio.on("list_files")
+def list_files(data):
+    try:
+        files = Files.query.all()
+        files_dict = [file.to_dict() for file in files]
+        socketio.emit("success",{"files":files_dict})
+    except Exception as e:
+        socketio.emit("error",{"error":str(e)})
+
